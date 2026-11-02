@@ -1,0 +1,16 @@
+{
+  "id": "./",
+  "name": "Atendimento NIO - WhatsApp",
+  "short_name": "Atendimento NIO",
+  "description": "Gerenciador local de atendimentos WhatsApp para técnicos da NIO.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f6f5",
+  "theme_color": "#075e54",
+  "icons": [
+    {"src":"assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
