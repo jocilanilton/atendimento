@@ -39,6 +39,24 @@
     const n = normalizePhone(phone);
     return `https://wa.me/55${n}${message ? "?text=" + encodeURIComponent(message) : ""}`;
   }
+function personalizeMessage(message, name) {
+    const customerName = String(name || "").trim();
+    let text = String(message || "").trim();
+
+    if (!customerName) {
+        return text;
+    }
+
+    // Remove a saudação inicial, caso exista
+    text = text.replace(/^olá\s*[!,]?\s*/i, "");
+
+    // Evita começar a frase seguinte com letra maiúscula
+    if (text.length > 0) {
+        text = text.charAt(0).toLowerCase() + text.slice(1);
+    }
+
+    return `Olá, ${customerName}, ${text}`;
+}
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   }
@@ -95,10 +113,24 @@
     if (!$("message").value.trim()) { toast("Digite uma mensagem ou escolha um modelo."); $("message").focus(); return false; }
     return true;
   }
-  function createLink() {
-    if (!validPhone($("phone").value)) { toast("Informe um telefone válido com DDD."); $("phone").focus(); return null; }
-    return waLink($("phone").value,$("message").value.trim());
-  }
+function createLink() {
+    if (!validPhone($("phone").value)) {
+        toast("Informe um telefone válido com DDD.");
+        return null;
+    }
+
+    const message = personalizeMessage(
+        $("message").value.trim(),
+        $("customer").value
+    );
+
+    if (!message) {
+        toast("Digite uma mensagem.");
+        return null;
+    }
+
+    return waLink($("phone").value, message);
+}
 
   $("templateButtons").addEventListener("click", e => {
     const btn=e.target.closest("[data-template]"); if(!btn)return;
@@ -114,12 +146,34 @@
     else if(n.length>9) n=n.slice(0,9)+"-"+n.slice(9);
     e.target.value=n;
   });
-  $("openWhatsApp").addEventListener("click", () => {
-    if(!validate())return;
-    const link=waLink($("phone").value,$("message").value.trim());
-    record($("phone").value,$("customer").value,$("message").value.trim(),currentMessageType());
-    window.open(link,"_blank","noopener");
-  });
+$("openWhatsApp").addEventListener("click", () => {
+    if (!validPhone($("phone").value)) {
+        toast("Informe um telefone válido com DDD.");
+        $("phone").focus();
+        return;
+    }
+
+    if (!$("message").value.trim()) {
+        toast("Escolha uma mensagem ou digite uma.");
+        return;
+    }
+
+    const message = personalizeMessage(
+        $("message").value.trim(),
+        $("customer").value
+    );
+
+    const link = waLink($("phone").value, message);
+
+    record(
+        $("phone").value,
+        $("customer").value,
+        message,
+        currentMessageType()
+    );
+
+    window.open(link, "_blank", "noopener");
+});
   $("makeLink").addEventListener("click", () => {
     const link=createLink(); if(!link)return;
     $("generatedLink").value=link; $("linkArea").hidden=false; $("qrArea").hidden=true; $("copyFeedback").textContent="";
