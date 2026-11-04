@@ -1,4 +1,4 @@
-# Gerenciador de Atendimento WhatsApp - Técnicos da NIO
+# Gerenciador de Atendimento WhatsApp - Técnicos da NIO, TIM e ALGAR
 
 ## Arquivos
 - `index.html`: interface do aplicativo.
